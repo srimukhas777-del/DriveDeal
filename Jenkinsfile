@@ -49,11 +49,12 @@ pipeline {
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )
-                ]) retry(3){
+                ]) {retry(3){
                     bat '''
                     echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                     docker push %IMAGE_NAME%:latest
                     '''
+                     }
                 }
             }
         }
