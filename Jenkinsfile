@@ -16,19 +16,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
+                bat 'docker build -t %IMAGE_NAME%:latest .'
             }
         }
 
@@ -37,9 +37,9 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')
                 ]) {
-                    sh '''
-                    echo $DOCKER_PASS | docker login -u srimukhas777 --password-stdin
-                    docker push $IMAGE_NAME:latest
+                    bat '''
+                    echo %DOCKER_PASS% | docker login -u srimukhas777 --password-stdin
+                    docker push %IMAGE_NAME%:latest
                     '''
                 }
             }
@@ -47,10 +47,10 @@ pipeline {
 
         stage('Deploy Container') {
             steps {
-                sh '''
-                docker stop drivedeal || true
-                docker rm drivedeal || true
-                docker run -d -p 5000:5000 --name drivedeal $IMAGE_NAME:latest
+                bat '''
+                docker stop drivedeal || exit 0
+                docker rm drivedeal || exit 0
+                docker run -d -p 5000:5000 --name drivedeal %IMAGE_NAME%:latest
                 '''
             }
         }
