@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "srimukhas777/drivedeal-backend"
+        IMAGE_NAME = "srimukh07/drivedeal-backend"
     }
 
     stages {
@@ -41,23 +41,22 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Login & Push Docker Image') {
             steps {
                 withCredentials([
-                usernamePassword(
-                credentialsId: 'dockerhub-password',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS'
-            )
-        ]) {
-              bat """
-              echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-              docker push srimukh07/drivedeal-backend:latest
-              """
+                    usernamePassword(
+                        credentialsId: 'dockerhub-password',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    bat '''
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                    docker push %IMAGE_NAME%:latest
+                    '''
+                }
+            }
         }
-    }
-}
-
 
         stage('Deploy Container') {
             steps {
