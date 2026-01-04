@@ -16,19 +16,28 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                bat '''
+                cd backend
+                npm install
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'npm test'
+                bat '''
+                cd backend
+                npm test
+                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %IMAGE_NAME%:latest .'
+                bat '''
+                cd backend
+                docker build -t %IMAGE_NAME%:latest .
+                '''
             }
         }
 
@@ -38,6 +47,7 @@ pipeline {
                     string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')
                 ]) {
                     bat '''
+                    cd backend
                     echo %DOCKER_PASS% | docker login -u srimukhas777 --password-stdin
                     docker push %IMAGE_NAME%:latest
                     '''
