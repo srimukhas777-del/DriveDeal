@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "srimukhas777/drivedeal-backend"
+        IMAGE_NAME = "srimukh07/drivedeal-backend"
     }
 
     stages {
@@ -10,61 +10,53 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/srimukhas777-del/DriveDeal.git'
+                    url: 'https://github.com/srimukh07/drivedeal-backend.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat '''
-                cd backend
-                npm install
-                '''
+                dir('backend') {
+                    sh 'npm install'
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat '''
-                cd backend
-                npm test
-                '''
+                dir('backend') {
+                    sh 'npm test'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat '''
-                cd backend
-                docker build -t %IMAGE_NAME%:latest .
-                '''
+                dir('backend') {
+                    sh 'docker build -t $IMAGE_NAME:latest .'
+                }
             }
         }
 
         stage('Push Docker Image') {
             steps {
                 withCredentials([
-                usernamePassword(
-                credentialsId: 'dockerhub-password',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS'
-            )
-        ]) {
-              bat """
-              echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-              docker push srimukh07/drivedeal-backend:latest
-              """
+                    string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')
+                ]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u srimukh07 --password-stdin
+                    docker push $IMAGE_NAME:latest
+                    '''
+                }
+            }
         }
-    }
-}
-
 
         stage('Deploy Container') {
             steps {
-                bat '''
-                docker stop drivedeal || exit 0
-                docker rm drivedeal || exit 0
-                docker run -d -p 5000:5000 --name drivedeal %IMAGE_NAME%:latest
+                sh '''
+                docker stop drivedeal-backend || true
+                docker rm drivedeal-backend || true
+                docker run -d -p 5000:5000 --name drivedeal-backend $IMAGE_NAME:latest
                 '''
             }
         }
