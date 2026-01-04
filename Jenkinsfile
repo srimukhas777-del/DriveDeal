@@ -44,16 +44,20 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASS')
-                ]) {
-                    bat '''
-                    cd backend
-                    echo %DOCKER_PASS% | docker login -u srimukhas777 --password-stdin
-                    docker push %IMAGE_NAME%:latest
-                    '''
-                }
-            }
+                usernamePassword(
+                credentialsId: 'dockerhub-password',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS'
+            )
+        ]) {
+              bat """
+              echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+              docker push srimukhas777/drivedeal-backend:latest
+              """
         }
+    }
+}
+
 
         stage('Deploy Container') {
             steps {
