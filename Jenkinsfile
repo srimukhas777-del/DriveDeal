@@ -52,7 +52,7 @@ pipeline {
         ]) {
               bat """
               echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-              docker push srimukhas777/drivedeal-backend:latest
+              docker push srimukh07/drivedeal-backend:latest
               """
         }
     }
