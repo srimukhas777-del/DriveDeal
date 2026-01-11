@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "srimukh07/drivedeal-backend"
+        JWT_SECRET = credentials('JWT_SECRET')
         MONGO_URI = credentials('MONGO_URI')
     }
 
