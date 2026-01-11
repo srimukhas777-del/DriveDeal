@@ -60,15 +60,20 @@ pipeline {
         }
 
        
-       stage('Deploy Container') {
+      stage('Deploy Container') {
     steps {
         bat '''
-        docker stop drivedeal-backend || exit 0
-        docker rm drivedeal-backend || exit 0
-        docker run -d -p 3000:3000 --name drivedeal-backend srimukh07/drivedeal-backend:latest
+        docker stop drivedeal-backend 2>nul || echo Not running
+        docker rm drivedeal-backend 2>nul || echo Not present
+
+        docker run -d ^
+        -p 5000:5000 ^
+        --name drivedeal-backend ^
+        srimukh07/drivedeal-backend:latest
         '''
     }
 }
+
 
     }
 }
