@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # Command to start your app
-CMD ["node", "start"]
+CMD ["npm","run","start"]
