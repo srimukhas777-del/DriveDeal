@@ -8,7 +8,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.MONGO_URI || 'http://localhost:3000',
     methods: ['GET', 'POST'],
   },
 });
@@ -43,9 +43,9 @@ io.on('connection', (socket) => {
   // Send message
   socket.on('send-message', (data) => {
     const { roomId, message, senderId, senderName } = data;
-    
+
     console.log(`Message from ${senderId} in room ${roomId}: ${message}`);
-    
+
     // Extract receiverId from roomId (format: userId1-userId2)
     const [id1, id2] = roomId.split('-');
     const receiverId = id1 === senderId ? id2 : id1;
